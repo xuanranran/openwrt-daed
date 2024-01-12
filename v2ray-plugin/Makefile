@@ -6,12 +6,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=v2ray-plugin
-PKG_VERSION:=5.13.0
+PKG_VERSION:=5.12.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/teddysun/v2ray-plugin/tar.gz/v$(PKG_VERSION)?
-PKG_HASH:=23b3a66516cb3b722839754913a4f0c8ac4bbb01631a4ad9251252fd9b401100
+PKG_HASH:=b03de5889dd918c2db756f96f35378c95fc97438d1f178ae95078e4ea1ad6daa
 
 PKG_LICENSE:=MIT
 PKG_LICENSE_FILES:=LICENSE
@@ -19,6 +19,7 @@ PKG_MAINTAINER:=madeye <max.c.lv@gmail.com>
 
 PKG_BUILD_DEPENDS:=golang/host
 PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
 PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/shadowsocks/v2ray-plugin
