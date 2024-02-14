@@ -59,7 +59,7 @@ define Package/daed-next/conffiles
 endef
 
 define Download/daed-next
-  URL:=https://github.com/QiuSimons/luci-app-daed-next/releases/download/daed-web-$(PKG_VERSION)/
+  URL:=https://github.com/xuanranran/luci-app-daed-next/releases/download/daed-web-$(PKG_VERSION)/
   URL_FILE:=daed-web-$(PKG_VERSION).squashfs
   FILE:=daed-web-$(PKG_VERSION).squashfs
   HASH:=skip
