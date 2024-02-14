@@ -46,10 +46,7 @@ service_triggers() {
 
 stop_service() {
 	sleep 2
-	mount_points=$(mount | grep '/tmp/daed-next' | awk '{print $3}')
-	for mp in $mount_points; do
-		umount -l "$mp" || { echo "Failed to force unmount $mp"; }
-	done
+	umount /var/daed-next
 }
 
 reload_service() {

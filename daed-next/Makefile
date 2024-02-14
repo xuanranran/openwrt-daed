@@ -5,14 +5,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=daed-next
-PKG_VERSION:=2023-12-02-102cb56
-CORE_VERSION:=core-$(shell date "+%Y-%m-%d")
+PKG_VERSION:=2023-11-28-d9027c7
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=102cb562b6962b44c47f38092284d2ab2506a702
 PKG_SOURCE_URL:=https://github.com/daeuniverse/daed-revived-next.git
+PKG_SOURCE_VERSION:=d9027c77c4fab0efe3e8125d4bbf7faf0c9ef87b
 PKG_MIRROR_HASH:=skip
 
 PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing
@@ -26,7 +25,7 @@ GO_PKG_LDFLAGS:= \
 	-X '$(GO_PKG)/db.AppDescription=$(PKG_NAME) is a integration solution of dae, API and UI.'
 GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG)/db.AppName=$(PKG_NAME) \
-	$(GO_PKG)/db.AppVersion=$(PKG_VERSION)-$(CORE_VERSION)
+	$(GO_PKG)/db.AppVersion=$(PKG_VERSION)
 GO_PKG_GCFLAGS:=-l=4
 
 include $(INCLUDE_DIR)/package.mk
@@ -45,7 +44,7 @@ define Package/daed-next
   TITLE:=daed-next is a backend of dae
   # You need enable KERNEL_DEBUG_INFO_BTF and KERNEL_BPF_EVENTS
   DEPENDS:=$(GO_ARCH_DEPENDS) $(BPF_DEPENDS) \
-    +ca-bundle +kmod-sched-core +kmod-sched-bpf +kmod-xdp-sockets-diag +kmod-veth \
+    +ca-bundle +kmod-sched-core +kmod-sched-bpf +kmod-xdp-sockets-diag \
     +node +v2ray-geoip +v2ray-geosite +zoneinfo-asia
 endef
 
@@ -67,10 +66,7 @@ define Download/daed-next
 endef
 
 define Build/Prepare
-	( \
-	$(TAR) --strip-components=1 -C $(PKG_BUILD_DIR)/../ -xzf $(DL_DIR)/$(PKG_NAME)-$(PKG_VERSION).tar.gz ; \
-	rm -rf $(PKG_BUILD_DIR) && git clone https://github.com/daeuniverse/dae-wing $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing ; \
-	)
+	$(TAR) --strip-components=1 -C $(PKG_BUILD_DIR)/../ -xzf $(DL_DIR)/$(PKG_NAME)-$(PKG_VERSION).tar.gz
 endef
 
 DAE_CFLAGS:= \
@@ -86,8 +82,7 @@ endif
 define Build/Compile
 	( \
 		pushd $(PKG_BUILD_DIR) ; \
-		rm -rf dae-core && git clone -b gray/fix-daens https://github.com/jschwinger233/dae dae-core ; \
-		rm -rf dae-core/control/kern/headers && git clone https://github.com/daeuniverse/dae_bpf_headers dae-core/control/kern/headers ; \
+		go get -u ; \
 		go mod tidy ; \
 		$(MAKE) deps ; \
 		$(GO_GENERAL_BUILD_CONFIG_VARS) \
@@ -95,6 +90,7 @@ define Build/Compile
 		$(GO_PKG_BUILD_VARS) \
 		go generate ./... ; \
 		cd dae-core ; \
+		go get -u ; \
 		go mod tidy ; \
 		$(GO_GENERAL_BUILD_CONFIG_VARS) \
 		$(GO_PKG_BUILD_CONFIG_VARS) \
