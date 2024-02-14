@@ -86,7 +86,7 @@ endif
 define Build/Compile
 	( \
 		pushd $(PKG_BUILD_DIR) ; \
-		rm -rf dae-core && git clone https://github.com/daeuniverse/dae dae-core ; \
+		rm -rf dae-core && git clone -b gray/fix-daens https://github.com/jschwinger233/dae dae-core ; \
 		rm -rf dae-core/control/kern/headers && git clone https://github.com/daeuniverse/dae_bpf_headers dae-core/control/kern/headers ; \
 		go mod tidy ; \
 		$(MAKE) deps ; \
