@@ -5,13 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=daed
+PKG_VERSION:=0.4.0rc1
 PKG_RELEASE:=1
 
-PKG_SOURCE_PROTO:=git
-PKG_SOURCE_URL:=https://github.com/daeuniverse/daed.git
-PKG_SOURCE_DATE:=2023-11-03
-PKG_SOURCE_VERSION:=54bc33934d0e323449df11fc26dc9569edbbe13c
-PKG_MIRROR_HASH:=1d4d8b4fd163834acec3d227ef56697d79ffa374309105a9e6b35dcf4aa96b14
+PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).zip
+PKG_SOURCE_URL:=https://github.com/daeuniverse/daed/releases/download/v$(PKG_VERSION)/daed-full-src.zip?
+PKG_HASH:=05218cade6e79b54ec0caaa6448737e292d0a374c2f70f09e4cea8ef5b27039d
 
 PKG_LICENSE:=AGPL-3.0-only MIT
 PKG_LICENSE_FILES:=LICENSE wing/LICENSE
@@ -20,12 +19,13 @@ PKG_MAINTAINER:=Tianling Shen <cnsztl@immortalwrt.org>
 PKG_BUILD_DIR=$(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)/wing
 PKG_BUILD_DEPENDS:=golang/host bpf-headers
 PKG_BUILD_PARALLEL:=1
+PKG_USE_MIPS16:=0
 PKG_BUILD_FLAGS:=no-mips16
 
 GO_PKG:=github.com/daeuniverse/dae-wing
 GO_PKG_LDFLAGS:= \
 	-X '$(GO_PKG)/db.AppDescription=$(PKG_NAME) is a integration solution of dae, API and UI.'
-GO_PKG_LDFLAGS_X= \
+GO_PKG_LDFLAGS_X:= \
 	$(GO_PKG)/db.AppName=$(PKG_NAME) \
 	$(GO_PKG)/db.AppVersion=$(PKG_VERSION)
 GO_PKG_TAGS:=embedallowed
@@ -54,14 +54,14 @@ endef
 define Package/daed-geoip
   $(call Package/daed/Default)
   TITLE:=geoip for daed
-  DEPENDS:=+daed +v2ray-geoip
+  DEPENDS:=+v2ray-geoip
   PKGARCH:=all
 endef
 
 define Package/daed-geosite
   $(call Package/daed/Default)
   TITLE:=geosite for daed
-  DEPENDS:=+daed +v2ray-geosite
+  DEPENDS:=+v2ray-geosite
   PKGARCH:=all
 endef
 
@@ -77,17 +77,18 @@ endef
 
 WEB_FILE:=$(PKG_NAME)-web-$(PKG_VERSION).zip
 define Download/daed-web
-	URL:=@IMMORTALWRT
+	URL:=https://github.com/daeuniverse/daed/releases/download/v$(PKG_VERSION)
+	URL_FILE:=web.zip
 	FILE:=$(WEB_FILE)
-	HASH:=8cbff499a250ab5af859e3374f566c683925ef9b3efddce7ceeefdf44ef6fe04
+	HASH:=3fa3fa55d21379f82297e72f7ced9bb46c111fc6c481779a51584c232efb15bf
 endef
 
 define Build/Prepare
 	$(call Build/Prepare/Default)
 
 	( \
-		mkdir -p $(PKG_BUILD_DIR)/webrender/web ; \
-		unzip -q -d $(PKG_BUILD_DIR)/webrender/web $(DL_DIR)/$(WEB_FILE) ; \
+		mkdir -p $(PKG_BUILD_DIR)/webrender ; \
+		unzip -q -d $(PKG_BUILD_DIR)/webrender/ $(DL_DIR)/$(WEB_FILE) ; \
 		find $(PKG_BUILD_DIR)/webrender/web -type f -size +4k ! -name "*.gz" ! -name "*.woff"  ! -name "*.woff2" -exec sh -c '\
 			gzip -9 -k "{}"; \
 			if [ "$$$$(stat -c %s {})" -lt "$$$$(stat -c %s {}.gz)" ]; then \
